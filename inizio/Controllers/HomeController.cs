@@ -13,9 +13,29 @@ namespace inizio.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string SearchText)
         {
-            return View();
+            List<GoogleSite> sites = new List<GoogleSite>();
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                return View(sites);
+            }
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://google.serper.dev/search");
+            request.Headers.Add("X-API-KEY", "API_KEY_HERE");
+            var content = new StringContent($"{{\"q\":\"{SearchText}\",\"gl\":\"cz\",\"hl\":\"cs\"}}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            var searchResult = System.Text.Json.JsonSerializer.Deserialize<SearchResult>(jsonResponse);
+
+            sites = searchResult?.Sites ?? new List<GoogleSite>();
+
+            return View(sites);
         }
 
         public IActionResult Privacy()
@@ -28,5 +48,7 @@ namespace inizio.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        
+        
     }
 }
