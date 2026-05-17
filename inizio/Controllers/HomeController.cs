@@ -1,6 +1,7 @@
-using System.Diagnostics;
 using inizio.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace inizio.Controllers
 {
@@ -23,7 +24,7 @@ namespace inizio.Controllers
 
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, "https://google.serper.dev/search");
-            request.Headers.Add("X-API-KEY", "API_KEY_HERE");
+            request.Headers.Add("X-API-KEY", "526f07c1c0bfa3c17d69bf0811ea96a88e21d01e");
             var content = new StringContent($"{{\"q\":\"{SearchText}\",\"gl\":\"cz\",\"hl\":\"cs\"}}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
@@ -36,6 +37,37 @@ namespace inizio.Controllers
             sites = searchResult?.Sites ?? new List<GoogleSite>();
 
             return View(sites);
+        }
+
+        public async Task<IActionResult> DownloadJson(string SearchText)
+        {
+            List<GoogleSite> sites = new List<GoogleSite>();
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                return View(sites);
+            }
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://google.serper.dev/search");
+            request.Headers.Add("X-API-KEY", "YOUR-API");
+            var content = new StringContent($"{{\"q\":\"{SearchText}\",\"gl\":\"cz\",\"hl\":\"cs\"}}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            var searchResult = System.Text.Json.JsonSerializer.Deserialize<SearchResult>(jsonResponse);
+
+            sites = searchResult?.Sites ?? new List<GoogleSite>();
+
+            var jsonToDownload = JsonSerializer.Serialize(sites, new JsonSerializerOptions { WriteIndented = true });
+
+            return File(
+                System.Text.Encoding.UTF8.GetBytes(jsonToDownload),
+                "application/json",
+                "search_results.json"
+                );
         }
 
         public IActionResult Privacy()
