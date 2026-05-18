@@ -18,7 +18,7 @@ namespace inizio.Controllers
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, "https://google.serper.dev/search");
-            request.Headers.Add("X-API-KEY", "526f07c1c0bfa3c17d69bf0811ea96a88e21d01e");
+            request.Headers.Add("X-API-KEY", "bfab9c74ff6ce40aedbc3f27fb3a0d001f994fb1");
             var content = new StringContent($"{{\"q\":\"{SearchText}\",\"gl\":\"cz\",\"hl\":\"cs\"}}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
@@ -36,7 +36,7 @@ namespace inizio.Controllers
         public async Task<IActionResult> Index(string SearchText)
         {
             List<GoogleSite> sites = new List<GoogleSite>();
-            if (string.IsNullOrWhiteSpace(SearchText))
+            if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 sites = await SearchGoogle(SearchText);
             }
@@ -48,7 +48,7 @@ namespace inizio.Controllers
         {
             List<GoogleSite> sites = new List<GoogleSite>();
 
-            if (string.IsNullOrWhiteSpace(SearchText))
+            if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 sites = await SearchGoogle(SearchText);
             }
