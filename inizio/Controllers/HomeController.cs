@@ -18,7 +18,7 @@ namespace inizio.Controllers
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, "https://google.serper.dev/search");
-            request.Headers.Add("X-API-KEY", "bfab9c74ff6ce40aedbc3f27fb3a0d001f994fb1");
+            request.Headers.Add("X-API-KEY", "INSERT-YOUR-API https://serper.dev/dashboard");
             var content = new StringContent($"{{\"q\":\"{SearchText}\",\"gl\":\"cz\",\"hl\":\"cs\"}}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
