@@ -20,9 +20,6 @@ namespace inizio.Controllers
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, "https://google.serper.dev/search");
-<<<<<<< HEAD
-            request.Headers.Add("X-API-KEY", "INSERT-YOUR-API https://serper.dev/dashboard");
-=======
 
             var apiKey = _configuration["SerperApiKey"];
             if (string.IsNullOrWhiteSpace(apiKey))
@@ -32,7 +29,6 @@ namespace inizio.Controllers
             request.Headers.Add("X-API-KEY", apiKey);
 
 
->>>>>>> e96c6b0 (Serper API for Azure)
             var content = new StringContent($"{{\"q\":\"{SearchText}\",\"gl\":\"cz\",\"hl\":\"cs\"}}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
